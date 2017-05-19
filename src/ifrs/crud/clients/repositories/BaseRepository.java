@@ -1,7 +1,10 @@
 package ifrs.crud.clients.repositories;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import ifrs.crud.clients.models.Entity;
@@ -11,10 +14,23 @@ public class BaseRepository<T extends Entity> implements IRepository<T> {
 	private long idCounter = 1;
 	private List<T> fakeDatabase = new ArrayList<T>();
 	
+	public T saveOrUpdate(T entity) throws Exception {
+		T savedEntity = null;
+		
+		if (entity.getId() == 0) {
+			savedEntity = this.save(entity);
+		} else {
+			savedEntity = this.update(entity);
+		}
+		
+		return savedEntity;
+	}
+	
 	@Override
 	public T save(T entity) {
 		fakeDatabase.add(entity);
 		entity.setId(idCounter++);
+		entity.setCreatedDate(new Date());
 		return entity;
 	}
 
@@ -43,10 +59,23 @@ public class BaseRepository<T extends Entity> implements IRepository<T> {
 	            .findAny()
 	            .orElse(null);
 	}
+	
+	@Override
+	public T findBy(Predicate<? super T> condition) {
+		return fakeDatabase.stream()
+				.filter(condition)
+	            .findAny()
+	            .orElse(null);
+	}
 
 	@Override
-	public List<T> findAll() {
-		return fakeDatabase.stream().collect(Collectors.toList());
+	public List<T> findAll(Predicate<? super T> condition) {
+		
+		if (condition == null) {
+			return fakeDatabase.stream().collect(Collectors.toList());
+		}
+		
+		return fakeDatabase.stream().filter(condition).collect(Collectors.toList());
 	}
 
 	@Override

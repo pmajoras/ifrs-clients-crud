@@ -11,7 +11,6 @@ public abstract class Client extends Entity {
 	private String cpfCnpj;
 	private String phone;
 	private String email;
-	private Date createdDate;
 	
 	public Client(String clientType) {
 		this.clientType = clientType;
@@ -68,12 +67,4 @@ public abstract class Client extends Entity {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}	
 }
